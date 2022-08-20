@@ -11,10 +11,6 @@ const client = new Client({
 });
 
 client.connect();
-client.query('SELECT NOW()', (err, res) => {
-  console.log('Sucess', res);
-  client.end();
-});
 
 module.exports = {
   client,
