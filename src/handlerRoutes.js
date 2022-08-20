@@ -32,8 +32,16 @@ const handler = (request, response) => {
       params[formatField] = urlSplit[index];
     }
   });
-  request.params = params;
-  return execute.controller(request, response);
+
+  request
+    .on('data', (data) => {
+      const body = JSON.parse(data);
+      request.body = body;
+    })
+    .on('end', (end) => {
+      request.params = params;
+      return execute.controller(request, response);
+    });
 };
 
 module.exports = handler;

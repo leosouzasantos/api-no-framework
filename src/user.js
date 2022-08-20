@@ -1,5 +1,5 @@
-const UserRepository = require('./userRepository');
-
+const UserRepository = require('./repositories/userRepository');
+const {createHmac, Hmac} = require('crypto');
 class User {
   constructor() {
     this.users = [];
@@ -7,7 +7,14 @@ class User {
   }
 
   async create(body) {
-    const user = await this.userRepository.create(body);
+    const {password} = body;
+    const pwdEncrypt = createHmac('sha256', password).digest('hex');
+
+    let user = {
+      ...body,
+      password: pwdEncrypt,
+    };
+    user = await this.userRepository.create(user);
     return user;
   }
 
@@ -22,7 +29,15 @@ class User {
       throw new Error('Usuario não encontrado!');
     }
 
-    await this.userRepository.update(body, id);
+    const {password} = body;
+    const pwdEncrypt = createHmac('sha256', password).digest('hex');
+
+    const user = {
+      ...body,
+      password: pwdEncrypt,
+    };
+
+    await this.userRepository.update(user, id);
   }
 }
 
